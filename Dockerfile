@@ -1,5 +1,6 @@
 FROM golang:1.22-alpine AS build
 RUN apk --no-cache --update add build-base
+ADD . /trade-engine/
 WORKDIR /trade-engine
 
 RUN go build -o api .
@@ -8,4 +9,4 @@ RUN go build -o api .
 EXPOSE 8080
 
 # Run the executable
-CMD ["/app/api"]
+CMD ["/trade-engine/api"]
