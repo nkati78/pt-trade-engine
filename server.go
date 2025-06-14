@@ -1,4 +1,4 @@
-package trade_engine
+package main
 
 import (
 	"log"
