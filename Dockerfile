@@ -1,7 +1,6 @@
 FROM golang:1.22-alpine AS build
 RUN apk --no-cache --update add build-base
-ADD . /app/
-WORKDIR /app
+WORKDIR /trade-engine
 
 RUN go build -o api .
 
