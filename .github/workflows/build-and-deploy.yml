@@ -48,16 +48,16 @@ jobs:
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-#      - name: Deploy to Amazon ECS
-#        run: |
-#          CLUSTER_NAME="pt-web-prod"
-#          SERVICE_NAME="pt-web-prod-service"
-#          REPO_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/paper-thesis/trade-engine
-#          IMAGE_TAG=${{ github.sha }}
-#
-#          aws ecs update-service \
-#            --cluster $CLUSTER_NAME \
-#            --service $SERVICE_NAME \
-#            --force-new-deployment
-#        env:
-#          AWS_REGION: ${{ secrets.AWS_REGION }}
+      - name: Deploy to Amazon ECS
+        run: |
+          CLUSTER_NAME="pt-web-prod"
+          SERVICE_NAME="trade-engine-v1"
+          REPO_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/paper-thesis/trade-engine
+          IMAGE_TAG=${{ github.sha }}
+
+          aws ecs update-service \
+            --cluster $CLUSTER_NAME \
+            --service $SERVICE_NAME \
+            --force-new-deployment
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
