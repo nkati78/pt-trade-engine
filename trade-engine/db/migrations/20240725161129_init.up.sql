@@ -1,0 +1,17 @@
+-- EXTENSIONS
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+--
+-- TRIGGERS
+CREATE OR REPLACE FUNCTION update_row_modified_function_()
+RETURNS TRIGGER
+AS
+$$
+BEGIN
+    -- ASSUMES the table has a column named exactly "updated_at".
+    -- Fetch date-time of actual current moment from clock, rather than start of statement or start of transaction.
+    NEW.updated_at = now();
+RETURN NEW;
+END;
+$$
+language 'plpgsql';
+--
