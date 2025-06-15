@@ -31,6 +31,10 @@ func StartServer(orderService orders.OrderService, userService users.UserService
 		})
 	})
 
+	router.GET("/healthz", func(c *gin.Context) {
+		c.Status(http.StatusNoContent) // 204 No Content
+	})
+
 	router.Use(RequestIdMiddleware())
 
 	ordersRouter := router.Group("/orders", auth.TokenMiddleware())
