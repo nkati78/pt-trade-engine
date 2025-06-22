@@ -50,8 +50,8 @@ jobs:
 
       - name: Deploy to Amazon ECS
         run: |
-          CLUSTER_NAME="pt-web-prod"
-          SERVICE_NAME="trade-engine-v1"
+          CLUSTER_NAME="paper-thesis"
+          SERVICE_NAME="trade-engine-v2"
           REPO_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/paper-thesis/trade-engine
           IMAGE_TAG=${{ github.sha }}
 
