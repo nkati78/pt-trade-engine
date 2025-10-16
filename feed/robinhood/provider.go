@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/paper-thesis/trade-engine/feed/fakefeed"
 )
 
 type Provider struct {
@@ -42,7 +45,7 @@ func NewProvider(secret string, tickers map[string]string) *Provider {
 	}
 }
 
-func (p *Provider) RetrievePrices() (map[string]Quote, error) {
+func (p *Provider) RetrievePrices() (map[string]fakefeed.Quote, error) {
 	url := fmt.Sprintf("%s/%s/?bounds=%s&include_inactive=true", p.baseURL+QUOTES_ROUTE, p.tickers["MSFT"], BOUNDS)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -64,8 +67,15 @@ func (p *Provider) RetrievePrices() (map[string]Quote, error) {
 		return nil, jsonErr
 	}
 
-	quotes := make(map[string]Quote)
-	quotes["MSFT"] = msftQuote
+	quotes := make(map[string]fakefeed.Quote)
+	price, err := strconv.ParseUint(msftQuote.LastTradePrice, 10, 64)
+	if err != nil {
+		price = 0
+		fmt.Println("Error parsing price: ", err)
+	}
+	quotes["MSFT"] = fakefeed.Quote{
+		LastTradePrice: price,
+	}
 
 	return quotes, nil
 
