@@ -32,7 +32,8 @@ func getBearerToken() string {
 
 // Start starts the worker
 func (w *Worker) Start() {
-	marketdata := robinhood.NewProvider(getBearerToken(), map[string]string{"MSFT": "50810c35-d215-4866-9758-0ada4ac79ffa"})
+	fmt.Println("Starting market data worker with Robinhood feed...")
+	marketdata := robinhood.NewProvider(getBearerToken(), map[string]string{"MSFT": "50810c35-d215-4866-9758-0ada4ac79ffa", "AAPL": "450dfc6d-5510-4d40-abfb-f633b7d9be3e", "IBM": "ae2e4ada-197d-42a4-825c-aff01cc3a8dd", "GOOGL": "54db869e-f7d5-45fb-88f1-8d7072d4c8b2", "NFLX": "81733743-965a-4d93-b87a-6973cb9efd34", "NVDA": "a4ecd608-e7b4-4ff3-afa5-f77ae7632dfb"})
 	//marketdata := fakefeed.NewProvider(map[string]int64{"MSFT": 23000, "AAPL": 23000, "GOOGL": 23000, "AMZN": 23000, "TSLA": 23000, "FB": 23000, "NVDA": 23000, "NFLX": 23000, "AMD": 23000, "INTC": 23000, "CSCO": 23000, "IBM": 23000, "ORCL": 23000, "QCOM": 23000, "TXN": 23000, "AVGO": 23000, "ADBE": 23000, "CRM": 23000})
 
 	for {
@@ -56,28 +57,28 @@ func (w *Worker) Start() {
 
 			// first time we are getting the market data
 			if marketData.StartingPrice == 0 {
-				marketData.StartingPrice = value.LastTradePrice
-				marketData.YesterdayOpen = value.LastTradePrice - 1000
+				marketData.StartingPrice = value.LastClosePrice
 				marketData.TodayHigh = value.LastTradePrice
 				marketData.TodayLow = value.LastTradePrice
-				marketData.YesterdayClose = value.LastTradePrice - 500
-				marketData.YesterdayHigh = value.LastTradePrice + 400
-				marketData.YesterdayLow = value.LastTradePrice - 1000
-				marketData.TradeDate = time.Now().Format("2006-01-02")
+				marketData.YesterdayClose = value.LastClosePrice
+				marketData.TradeDate = value.TradingDay
+				marketData.TodayOpen = value.LastClosePrice
+				marketData.TradeDate = value.TradingDay
 			}
 
 			// check if new trading day
-			if marketData.TradeDate != time.Now().Format("2006-01-02") {
+			if marketData.TradeDate != value.TradingDay {
 				fmt.Println("\n==================\nNew trading day\n==================\n")
 				fmt.Println("Old trade date: ", marketData.TradeDate)
-				fmt.Println("New trade date: ", time.Now().Format("2006-01-02"))
-				marketData.TradeDate = time.Now().Format("2006-01-02")
-				marketData.StartingPrice = value.LastTradePrice
+				fmt.Println("New trade date: ", value.TradingDay)
+				marketData.TradeDate = value.TradingDay
+				marketData.StartingPrice = value.LastClosePrice
 				marketData.TodayHigh = value.LastTradePrice
 				marketData.TodayLow = value.LastTradePrice
 				marketData.YesterdayClose = marketData.Price
 				marketData.YesterdayHigh = marketData.TodayHigh
 				marketData.YesterdayLow = marketData.TodayLow
+				marketData.TodayOpen = value.LastClosePrice
 			}
 
 			// check if we are todays high or low
@@ -91,7 +92,7 @@ func (w *Worker) Start() {
 
 			// check if we are the starting price
 			if marketData.StartingPrice == 0 {
-				marketData.StartingPrice = value.LastTradePrice
+				marketData.StartingPrice = value.LastClosePrice
 			}
 
 			_, err = w.marketDataService.UpsertMarketData(context.Background(), *marketData)
@@ -103,7 +104,7 @@ func (w *Worker) Start() {
 
 			orderBook := w.orderService.GetOrderBook(symbol)
 			for _, order := range orderBook {
-				fmt.Println("Checking order: ", order)
+				// fmt.Println("Checking order: ", order)
 				if order.Type == orders.Market && order.Status == orders.Open {
 					w.orderService.FillOrder(context.Background(), order, newPrice)
 				}

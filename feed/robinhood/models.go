@@ -27,3 +27,7 @@ type Quote struct {
 	InstrumentID                string    `json:"instrument_id"`
 	State                       string    `json:"state"`
 }
+
+type QuotesResponse struct {
+	Results []Quote `json:"results"`
+}

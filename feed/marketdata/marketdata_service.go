@@ -65,7 +65,7 @@ func (m MarketDataService) GetMarketData(ctx context.Context, symbol string) (*M
 
 	}
 
-	fmt.Println("trade date in db: ", data.TradeDate)
+	//fmt.Println("trade date in db: ", data.TradeDate)
 
 	return &MarketData{
 		ID:               data.ID,
@@ -104,12 +104,12 @@ func (m MarketDataService) UpsertMarketData(ctx context.Context, marketData Mark
 
 	//fmt.Println(data)
 
-	res, err := m.dal.UpsertMarketPrice(ctx, data)
+	_, err := m.dal.UpsertMarketPrice(ctx, data)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("New Data: ", res)
+	//fmt.Println("New Data: ", res)
 
 	return &marketData, nil
 }
