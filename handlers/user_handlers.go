@@ -111,6 +111,7 @@ func (uh UserHandler) GetBalance(c *gin.Context) (HTTPStatusCode, interface{}) {
 		}
 
 		totalValue += float64(position.ProfitLoss)
+		totalValue += float64(position.Quantity) * float64(position.AvgPrice)
 	}
 
 	balance.Balance += totalValue
